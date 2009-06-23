@@ -9,11 +9,13 @@ QT +=			opengl
 
 HEADERS =\
   src/glWidget.h\
+  src/rotationSelector.h\
   src/cube.h
 
 SOURCES =\
   src/glWidget.cpp\
   src/cube.cpp\
+  src/rotationSelector.cpp\
   src/main.cpp
 
 CONFIG +=\

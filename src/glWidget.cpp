@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include <cube.h>
+#include <rotationSelector.h>
 
 GlWidget::GlWidget(QWidget *parent)
   :QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
@@ -113,7 +114,9 @@ void GlWidget::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton)
     {
       Cube *cube = _cubes[_selection];
-      cube->Rotate(0.f, 0.f, cube->rz() + 30.f);
+      //cube->Rotate(0.f, 0.f, cube->rz() + 30.f);
+      RotationSelector selector(cube, this);
+      selector.exec();
     }
   }
 }
@@ -154,7 +157,7 @@ void GlWidget::pick(const QPoint &pos)
 
 void GlWidget::processHits(GLint hits, GLuint buffer[])
 {
-  int selection;
+  int selection = -1;
 
   if (hits > 0)
   {

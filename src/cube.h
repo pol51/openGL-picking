@@ -1,3 +1,6 @@
+#ifndef __CUBE_H
+#define __CUBE_H
+
 #include <QtOpenGL>
 
 class Cube : public QObject
@@ -90,7 +93,20 @@ class Cube : public QObject
     */
     void Rotate(qreal rx, qreal ry, qreal rz) { _rx = rx; _ry = ry; _rz = rz; }
 
+    /*!
+    * @brief Get the current rotations
+    */
     qreal rx() const { return _rx; }
     qreal ry() const { return _ry; }
     qreal rz() const { return _rz; }
+
+  public slots:
+    /*!
+    * @brief Set the current rotations
+    */
+    void setRx(int r) { _rx = (qreal)r; }
+    void setRy(int r) { _ry = (qreal)r; }
+    void setRz(int r) { _rz = (qreal)r; }
 };
+
+#endif
