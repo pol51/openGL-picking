@@ -23,7 +23,11 @@ void Cube::Draw() const
   if (!highlighted())
     glColor4f(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
   else
-    glColor4f(1.f, 1.f, 1.f, 1.f);
+  {
+    QColor HColor = _color.lighter(120);
+
+    glColor4f(HColor.redF(), HColor.greenF(), HColor.blueF(), HColor.alphaF());
+  }
 
   qreal hSize = _size / 2.f;
 
@@ -57,7 +61,7 @@ void Cube::Draw() const
     glVertex3f( hSize,  hSize, -hSize);
     glVertex3f(-hSize,  hSize, -hSize);
   glEnd();
-glBegin(GL_QUADS);
+  glBegin(GL_QUADS);
     glVertex3f(-hSize, -hSize,  hSize);
     glVertex3f(-hSize,  hSize,  hSize);
     glVertex3f(-hSize,  hSize, -hSize);
@@ -69,7 +73,6 @@ glBegin(GL_QUADS);
     glVertex3f( hSize,  hSize, -hSize);
     glVertex3f( hSize, -hSize, -hSize);
   glEnd();
-
 
   glPopMatrix();
 }
