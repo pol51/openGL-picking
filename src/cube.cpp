@@ -20,14 +20,10 @@ void Cube::Draw() const
 
   glLoadName(_id);
 
-  if (!highlighted())
-    glColor4f(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
-  else
-  {
-    QColor HColor = _color.lighter(120);
+  QColor color(_color);
 
-    glColor4f(HColor.redF(), HColor.greenF(), HColor.blueF(), HColor.alphaF());
-  }
+  //if (highlighted())
+    //color = _color.lighter(120);
 
   qreal hSize = _size / 2.f;
 
@@ -37,42 +33,85 @@ void Cube::Draw() const
   glRotatef(_ry, 0.f, 1.f, 0.f);
   glRotatef(_rz, 0.f, 0.f, 1.f);
 
+  GLfloat diffuseColor[4] =
+    {color.redF(), color.greenF(), color.blueF(), color.alphaF()};
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor);
+
   glBegin(GL_QUADS);
+
+  glNormal3f( 0,  0, -1);
+  glVertex3f( hSize, -hSize, -hSize);
+  glVertex3f( hSize,  hSize, -hSize);
+  glVertex3f(-hSize,  hSize, -hSize);
+  glVertex3f(-hSize, -hSize, -hSize);
+
+  glNormal3f( 0,  0,  1);
+  glVertex3f(-hSize, -hSize,  hSize);
+  glVertex3f(-hSize,  hSize,  hSize);
+  glVertex3f( hSize,  hSize,  hSize);
+  glVertex3f( hSize, -hSize,  hSize);
+
+  glNormal3f( 0,  1, 0);
+  glVertex3f(-hSize,  hSize,  hSize);
+  glVertex3f(-hSize,  hSize, -hSize);
+  glVertex3f( hSize,  hSize, -hSize);
+  glVertex3f( hSize,  hSize,  hSize);
+
+  glNormal3f( 0, -1, 0);
+  glVertex3f(-hSize, -hSize, -hSize);
+  glVertex3f(-hSize, -hSize,  hSize);
+  glVertex3f( hSize, -hSize,  hSize);
+  glVertex3f( hSize, -hSize, -hSize);
+
+  glNormal3f(-1,  0,  0);
+  glVertex3f(-hSize, -hSize,  hSize);
+  glVertex3f(-hSize, -hSize, -hSize);
+  glVertex3f(-hSize,  hSize, -hSize);
+  glVertex3f(-hSize,  hSize,  hSize);
+
+  glNormal3f( 1,  0,  0);
+  glVertex3f( hSize,  hSize,  hSize);
+  glVertex3f( hSize,  hSize, -hSize);
+  glVertex3f( hSize, -hSize, -hSize);
+  glVertex3f( hSize, -hSize,  hSize);
+
+  glEnd();
+
+  if (highlighted())
+  {
+    hSize += 0.01;
+
+    glDisable(GL_LIGHTING);
+    glColor4f(0., 1., 0., 1.);
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f( hSize, -hSize, -hSize);
     glVertex3f( hSize,  hSize, -hSize);
     glVertex3f(-hSize,  hSize, -hSize);
     glVertex3f(-hSize, -hSize, -hSize);
-    glVertex3f( hSize, -hSize, -hSize);
-  glEnd();
-  glBegin(GL_QUADS);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(-hSize, -hSize,  hSize);
     glVertex3f(-hSize,  hSize,  hSize);
     glVertex3f( hSize,  hSize,  hSize);
     glVertex3f( hSize, -hSize,  hSize);
-    glVertex3f(-hSize, -hSize,  hSize);
-  glEnd();
-  glBegin(GL_QUADS);
-    glVertex3f( hSize, -hSize,  hSize);
-    glVertex3f(-hSize, -hSize,  hSize);
+    glEnd();
+
+    glBegin(GL_LINES);
     glVertex3f(-hSize, -hSize, -hSize);
-    glVertex3f( hSize, -hSize, -hSize);
-  glEnd();
-  glBegin(GL_QUADS);
-    glVertex3f(-hSize,  hSize,  hSize);
-    glVertex3f( hSize,  hSize,  hSize);
-    glVertex3f( hSize,  hSize, -hSize);
-    glVertex3f(-hSize,  hSize, -hSize);
-  glEnd();
-  glBegin(GL_QUADS);
     glVertex3f(-hSize, -hSize,  hSize);
-    glVertex3f(-hSize,  hSize,  hSize);
-    glVertex3f(-hSize,  hSize, -hSize);
-    glVertex3f(-hSize, -hSize, -hSize);
-  glEnd();
-  glBegin(GL_QUADS);
-    glVertex3f( hSize, -hSize,  hSize);
-    glVertex3f( hSize,  hSize,  hSize);
     glVertex3f( hSize,  hSize, -hSize);
+    glVertex3f( hSize,  hSize,  hSize);
+    glVertex3f(-hSize,  hSize, -hSize);
+    glVertex3f(-hSize,  hSize,  hSize);
     glVertex3f( hSize, -hSize, -hSize);
-  glEnd();
+    glVertex3f( hSize, -hSize,  hSize);
+    glEnd();
+
+    glEnable(GL_LIGHTING);
+
+  }
 
   glPopMatrix();
 }

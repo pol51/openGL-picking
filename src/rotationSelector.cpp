@@ -5,6 +5,8 @@
 RotationSelector::RotationSelector(Cube* cube, QWidget* parent):
   QDialog(parent)
 {
+  setWindowTitle("Cube Rotations");
+
   _mainLayout.addWidget(&_lblRX, 0, 0);
   _mainLayout.addWidget(&_lblRY, 1, 0);
   _mainLayout.addWidget(&_lblRZ, 2, 0);

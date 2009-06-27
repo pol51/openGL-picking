@@ -14,12 +14,18 @@ class GlWidget : public QGLWidget
     QTimer _refreshTimer;
     QVector<Cube*> _cubes;
     int _selection;
+    QPoint _lastPos;
+    int _rx;
+    int _ry;
+    int _rz;
 
   public:
     GlWidget(QWidget *parent = NULL);
     virtual ~GlWidget();
 
     QSize sizeHint() const;
+
+    static int normalizeAngle(int angle);
 
   protected:
     virtual void initializeGL();

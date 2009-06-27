@@ -8,7 +8,7 @@
 
 GlWidget::GlWidget(QWidget *parent)
   :QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
-  _selection(-1)
+  _selection(-1), _rx(0), _ry(0), _rz(0)
 {
   _refreshTimer.setSingleShot(false);
   QObject::connect(
@@ -48,29 +48,58 @@ QSize GlWidget::sizeHint() const
 void GlWidget::initializeGL()
 {
   qglClearColor(Qt::black);
-  glShadeModel(GL_FLAT);
-  glEnable(GL_DEPTH_TEST);
+  glShadeModel(GL_SMOOTH);
 }
 
 void GlWidget::paintGL()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   resizeGL(width(), height());
+
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
+
+  qglClearColor(Qt::black);
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  static GLfloat lightPosition[4] = { 0.2, 0.3, 6.0, 3.0 };
+  glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+  glPushMatrix();
+
   draw();
+
+  glPopMatrix();
+
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
+  glDisable(GL_LIGHT0);
+  glDisable(GL_LIGHTING);
+
+  glFlush();
 }
 
 void GlWidget::draw()
 {
+  glPushMatrix();
+
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
+  glTranslated(0.0, 0.0, -10.0);
+  glRotated(_rx / 16.0, 1.0, 0.0, 0.0);
+  glRotated(_ry / 16.0, 0.0, 1.0, 0.0);
+  glRotated(_rz / 16.0, 0.0, 0.0, 1.0);
 
   QVectorIterator<Cube*> cube(_cubes);
   while (cube.hasNext())
     cube.next()->Draw();
+
+  glPopMatrix();
 }
 
 void GlWidget::resizeGL(int width, int height)
@@ -80,7 +109,7 @@ void GlWidget::resizeGL(int width, int height)
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+  glOrtho(-1, +1, +1, -1, -1.0, 15.0);
   glMatrixMode(GL_MODELVIEW);
 }
 
@@ -96,11 +125,27 @@ void GlWidget::paintEvent(QPaintEvent */*event*/)
 
 void GlWidget::mouseMoveEvent(QMouseEvent *event)
 {
+  int dx = event->x() - _lastPos.x();
+  int dy = event->y() - _lastPos.y();
+
+  if (event->buttons() & Qt::LeftButton)
+  {
+    _rx = normalizeAngle(_rx + 8*dy);
+    _ry = normalizeAngle(_ry + 8*dx);
+  }
+  else if (event->buttons() & Qt::RightButton)
+  {
+    _rx = normalizeAngle(_rx + 8*dy);
+    _rz = normalizeAngle(_rz + 8*dx);
+  }
+  _lastPos = event->pos();
   pick(event->pos());
 }
 
 void GlWidget::mousePressEvent(QMouseEvent *event)
 {
+  _lastPos = event->pos();
+
   pick(event->pos());
   if (_selection >= 0)
   {
@@ -114,7 +159,6 @@ void GlWidget::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton)
     {
       Cube *cube = _cubes[_selection];
-      //cube->Rotate(0.f, 0.f, cube->rz() + 30.f);
       RotationSelector selector(cube, this);
       selector.exec();
     }
@@ -137,10 +181,11 @@ void GlWidget::pick(const QPoint &pos)
   glInitNames();
   glPushName(0);
 
+  glPushMatrix();
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPickMatrix((GLdouble)x, (GLdouble)(viewport[3] - y), 1.f, 1.f, viewport);
-  glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+  glOrtho(-1, +1, +1, -1, -1.0, 15.0);
 
   draw();
 
@@ -151,6 +196,8 @@ void GlWidget::pick(const QPoint &pos)
 
   //On traite les sommets cliqués
   processHits(hits, selectBuf); //Fonction appelée ci-dessous
+
+  glPopMatrix();
 
   updateGL();
 }
@@ -202,4 +249,11 @@ void GlWidget::processHits(GLint hits, GLuint buffer[])
     if (_selection >= 0) _cubes[_selection]->setHighlighted(true);
     qDebug() << "Selection changed:" << _selection;
   }
+}
+
+int GlWidget::normalizeAngle(int angle)
+{
+  while (angle < 0) angle += 360 * 16;
+  while (angle > 360 * 16) angle -= 360 * 16;
+  return angle;
 }
