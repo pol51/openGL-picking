@@ -216,7 +216,7 @@ void GlWidget::processHits(GLint hits, GLuint buffer[])
     ptr = (GLuint *)buffer;
 
     /*  Pour chaque hit (collision)  */
-    for (GLint i = 0; i < hits; i++)
+    for (GLint i = 0; i < hits; ++i)
     {
       nb_names = ptr[0];
       if (nb_names != 1)
