@@ -130,13 +130,13 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
 
   if (event->buttons() & Qt::LeftButton)
   {
-    _rx = normalizeAngle(_rx + 8*dy);
-    _ry = normalizeAngle(_ry + 8*dx);
+    _rx = normalizeAngle(_rx + (dy<<3));
+    _ry = normalizeAngle(_ry + (dx<<3));
   }
   else if (event->buttons() & Qt::RightButton)
   {
-    _rx = normalizeAngle(_rx + 8*dy);
-    _rz = normalizeAngle(_rz + 8*dx);
+    _rx = normalizeAngle(_rx + (dy<<3));
+    _rz = normalizeAngle(_rz + (dx<<3));
   }
   _lastPos = event->pos();
   pick(event->pos());
@@ -253,7 +253,7 @@ void GlWidget::processHits(GLint hits, GLuint buffer[])
 
 int GlWidget::normalizeAngle(int angle)
 {
-  while (angle < 0) angle += 360 * 16;
-  while (angle > 360 * 16) angle -= 360 * 16;
+  while (angle < 0) angle += (360<<4);
+  while (angle > (360<<4)) angle -= (360<<4);
   return angle;
 }
