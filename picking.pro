@@ -7,6 +7,10 @@ INCLUDEPATH +=	src
 
 QT +=			opengl
 
+PKGCONFIG += glu
+
+LIBS += -lGLU
+
 HEADERS =\
   src/glWidget.h\
   src/rotationSelector.h\

@@ -6,6 +6,8 @@
 #include <cube.h>
 #include <rotationSelector.h>
 
+#include <GL/glu.h>
+
 GlWidget::GlWidget(QWidget *parent)
   :QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
   _selection(-1), _rx(0), _ry(0), _rz(0)
